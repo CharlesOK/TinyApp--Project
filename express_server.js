@@ -14,7 +14,7 @@ var urlDatabase = {
 
 function generateRandomString() {
   let randomString = "";
-  let newString = "abcdefghijkl5896y5y9yr498y43973455895654743ght";
+  let newString = "abcdefghijkl5896yiuy3ght";
   for(var i = 0; i < 5; i++) {
     var random = Math.floor(Math.random() * newString.length - 1);
     randomString += newString[random];
@@ -30,15 +30,16 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.get("/u/:shortURL", (req, res) => {
-let longURL = urlDatabase[req.params.shortURL];
-  console.log(req.params);
-  res.redirect(longURL);
-});
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id };
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+let longURL = urlDatabase[req.params.shortURL].longURL;
+  console.log(req.params);
+  res.redirect(longURL);
 });
 
 
@@ -58,14 +59,20 @@ app.post("/urls", (req, res) => {
 });
 
 
-app.post("/urls:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls/:id", (req, res) => {
+  var longURL = req.body.longURL;
+  urlDatabase[req.params.id] = {
+    longURL: req.body.longURL,
+    userId: req.session.id
+
+  };
   console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls");         // Respond with 'Ok' (we will replace this)
 });
 
 app.listen(PORT, () => {
