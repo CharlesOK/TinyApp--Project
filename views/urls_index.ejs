@@ -9,10 +9,11 @@
 <body>
   <ul>
     <% for(key in urls) { %>
+    <form method="POST" action="/urls/<%= key %>/delete">
     <li><%= key %> - <%= urls[key] %>
   </li>
-    <form method="POST" action="/urls/9sm5xK/delete">
-<a href="/urls/<%= key %>">Edit</a> <button>Delete</button>
+  <button type="submit" name="delete">Delete</button>
+<a href="/urls/<%= key %>">Edit</a>
 </form>
 
   <% } %>
