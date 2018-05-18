@@ -3,21 +3,27 @@
 <head>
   <title>TinyApp</title>
 </head>
-<header>
+<body>
+  <header>
   <%- include partials/_header.ejs %>
   </header>
-<body>
-  <ul>
-    <% for(key in urls) { %>
-    <form method="POST" action="/urls/<%= key %>/delete">
-    <li><%= key %> - <%= urls[key] %>
-  </li>
-  <button type="submit" name="delete">Delete</button>
-<a href="/urls/<%= key %>">Edit</a>
-</form>
+    <ul>
 
+    <% for(key in urls) {  %>
+      <form action="/urls/<%= key %>/delete"  method="POST">
+        <li>
+          <%= key %> - <%= urls[key].longURL %>
+          <% if(user && user.id === urls[key].userId) { %>
+            <button type="submit" name="delete">Delete</button>
+            <a href="/urls/<%= key %>">Edit</a>
+          <% } %>
+        </li>
+    </form>
   <% } %>
-</ul>
-<a href ="#">Shortened URL</a>
+  </ul>
+  <a href="/urls/new">Shorten Your Link Here!</a>
+
+
+
 </body>
 </html>

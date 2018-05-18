@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
+const cookie-parser = require("cookie-parser");
 
 //define middleware
 app.set("view engine", "ejs");
@@ -22,8 +23,16 @@ function generateRandomString() {
   return randomString;
 }
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase};
-  res.render("urls_index", templateVars);
+  if(req.session) {
+    var templateVars = {
+      urls: urlsForUser(req.session.id),
+      user: users[req.session.id],
+    };
+    console.log(urlDatabase)
+    res.render("urls_index", templateVars);
+ } else {
+
+  }
 });
 
 app.get("/urls/new", (req, res) => {
@@ -32,9 +41,20 @@ app.get("/urls/new", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id };
-  res.render("urls_show", templateVars);
+  if(req.session && req.session.id && urlDatabase[req.params.id].userId === req.session.id) {
+    let templateVars = {
+      shortURL: req.params.id,
+      urls: urlDatabase,
+      user : users[req.session.id]
+    };
+    res.render("urls_show", templateVars);
+  } else if (req.session.id) {
+    res.status(403).send("Sorry, you do not have permissions to change this URL");
+  } else {
+    res.status(403).send("Please Login First!");
+  }
 });
+
 
 app.get("/u/:shortURL", (req, res) => {
 let longURL = urlDatabase[req.params.shortURL].longURL;
@@ -71,8 +91,61 @@ app.post("/urls/:id", (req, res) => {
     userId: req.session.id
 
   };
+  res.redirect("/urls");
+    });
+
+  app.post('/login', (req, res) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  console.log(req.body.username);
+  if (username)
+  for (name in users) {
+    if (username === users[name].email) {
+      if(bcrypt.compareSync(password, users[name].password) ) {
+        req.session.id = users[name].id;
+          res.redirect('/urls');
+          return;
+      } else {
+        res.status(403).send ('Oops! Looks like you entered the wrong password!');
+      return;
+      }
+    }
+  }
+  res.status(403).send('Are you sure you entered in your username and password correctly?')
+});
+
   console.log(req.body);  // debug statement to see POST parameters
   res.redirect("/urls");         // Respond with 'Ok' (we will replace this)
+});
+
+app.post('/register', (req, res) => {
+  const newEmail = req.body.email;
+  const newPassword = bcrypt.hashSync(req.body.password, 10);
+  if(req.body.password.length > 0 && newEmail.length > 0 && newPassword.length > 0 ) {
+    for(key in users) {
+      if(users[key].email === newEmail) {
+        return res.status(400).send ('SORRY FRIEND! THIS EMAIL IS CURRENTLY REGISTERED!')
+      }
+    }
+    let newId = generateRandomString();
+
+    users[newId] = {
+      id: newId,
+      email: newEmail,
+      password: newPassword
+    };
+    req.session.id = newId;
+    console.log(users);
+    return res.redirect('/urls');
+  } else {
+    res.status(400).send ('OOPS! LOOKS LIKE YOU MISSED A STEP!');
+  }
+
+});
+
+app.post('/logout', (req, res) => {
+  req.session = null;
+  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
