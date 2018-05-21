@@ -7,7 +7,7 @@ Tiny App is a full stack web application built with Node.js and Express which al
 * Node.js
 * Express
 * EJS
-* bcrypt
+* bcryptjs
 * body-parser
 * cookie-session
 * nodemon
