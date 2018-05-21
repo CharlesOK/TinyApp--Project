@@ -3,9 +3,6 @@ Tiny App!
 </header>
 
 <% if(!user) { %>
-  <form method="POST" action="/logout">
-  <button type = "submit">Logout</button>
-  </form>
   <a href="/login">Login</a>
   <a href="/register">Register</a>
   <% } else { %>
