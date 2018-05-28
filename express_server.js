@@ -33,7 +33,7 @@ const users = {
  // generate a random user ID
 function generateRandomString() {
   let randomString = "";
-  let newString = "abcdefghijkl5896yiuy3ght";
+  let newString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for(var i = 0; i < 5; i++) {
     var random = Math.floor(Math.random() * newString.length - 1);
     randomString += newString[random];
