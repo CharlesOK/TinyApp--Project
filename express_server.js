@@ -35,7 +35,7 @@ function generateRandomString() {
   let randomString = "";
   let newString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for(var i = 0; i < 5; i++) {
-    var random = Math.floor(Math.random() * newString.length - 1);
+    var random = Math.floor(Math.random() * newString.length);
     randomString += newString[random];
   }
   return randomString;
